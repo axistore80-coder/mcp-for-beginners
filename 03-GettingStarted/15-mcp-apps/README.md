@@ -252,7 +252,7 @@ getFaqBtn.addEventListener("click", async () => {
 
 In the code above we:
 
-- Create references to the interesting UI elements.
+- Create references to the interactive UI elements.
 - Handle a button click to parse out the input element value and we also call `app.callServerTool()` with `name` and `arguments` where the latter is passing `query` as value. 
 
 What actually happens when you call `callServerTool` is that it sends a message to the parent window and that window ends up calling the MCP Server.
