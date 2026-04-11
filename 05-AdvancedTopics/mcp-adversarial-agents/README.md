@@ -541,23 +541,33 @@ Deliver a verdict with:
 
 ### Step 4 — Wiring MCP Tools into the Agents
 
-The examples above show the debate orchestration logic. In a production implementation, you wire each agent's LLM call through the MCP client SDK so that the agents can actually call tools:
+The examples above show the debate orchestration logic. In a production implementation, you wire each agent's LLM call through the MCP client SDK so that the agents can actually call tools. To keep both agents in the same MCP tool environment, create one long-lived client/session and pass that shared session into each agent turn:
 
 ```python
-# Pseudocode: connecting an agent to the MCP server
+# Pseudocode: connecting both agents to one shared MCP session
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-async def run_agent_turn_with_tools(history, system_prompt):
+async def run_agent_turn_with_tools(history, system_prompt, session):
+    # Reuse the already-initialized shared session for each turn
+    tools = await session.list_tools()
+    # ... call LLM with tools, handle tool_use blocks, call session.call_tool(...)
+
+async def run_debate(for_history, against_history):
     server_params = StdioServerParameters(
         command="python", args=["shared_tools_server.py"]
     )
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            # List available tools and pass them to the LLM
-            tools = await session.list_tools()
-            # ... call LLM with tools, handle tool_use blocks, call session.call_tool(...)
+
+            for_result = await run_agent_turn_with_tools(
+                for_history, "Argue in favor of the proposal.", session
+            )
+            against_result = await run_agent_turn_with_tools(
+                against_history, "Argue against the proposal.", session
+            )
+            return for_result, against_result
 ```
 
 Refer to [03-GettingStarted/02-client](../../03-GettingStarted/02-client/solution/) for complete MCP client examples in each language.
