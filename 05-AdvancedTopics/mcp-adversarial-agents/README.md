@@ -374,8 +374,21 @@ async function runAgentTurn(history: Message[], systemPrompt: string): Promise<s
     system: systemPrompt,
     messages: history,
   });
-  const block = response.content[0];
-  return block.type === "text" ? block.text : "";
+
+  const text = response.content
+    .filter((block) => block.type === "text")
+    .map((block) => block.text)
+    .join("\n")
+    .trim();
+
+  if (!text) {
+    const blockTypes = response.content.map((block) => block.type).join(", ");
+    throw new Error(
+      `Expected at least one text response block, but received: ${blockTypes || "none"}`
+    );
+  }
+
+  return text;
 }
 
 async function runDebate(
