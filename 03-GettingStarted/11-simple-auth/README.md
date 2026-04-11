@@ -491,7 +491,7 @@ With that said, let's try to harden the security a little bit by using a standar
 
 So, we're trying to improve things from sending very simple credentials. What's the immediate improvements we get adopting JWT?
 
-- **Security improvements**. In basic auth, you send the username and password as a base64 encoded token (or you send an API key) over and over which increases the risk. With JWT, you send your username and password and get a token in return and it's also time bound meaning it will expire. JWT lets you easily use fine-grained access control using roles, scopes and permissions. 
+- **Security improvements**. In basic auth, you send the username and password as a base64 encoded token (or you send an API key) over and over which increases the risk. With JWT, you send your username and password and get a token in return and it's also time bound meaning it will expire. JWT lets you easily use fine-grained access control using roles, scopes and permissions.
 - **Statelessness and scalability**. JWTs are self-contained, they carry all user info and eliminate the need to store server-side session storage. Token can also be validated locally.
 - **Interoperability and federation**. JWTs is central of Open ID Connect and is used with known identity providers like Entra ID, Google Identity and Auth0. They also make it possible to use single sign on and much more making it enterprise-grade.
 - **Modularity and flexibility**. JWTs can also be used with API Gateways like Azure API Management, NGINX and more. It also supports use authentication scenarios and server-to-service communication including impersonation and delegation scenarios.
