@@ -37,7 +37,7 @@ flowchart TD
     subgraph SharedMCPServer["Shared MCP Tool Server"]
         WebSearch[Web Search Tool]
         CodeExec[Code Execution Tool]
-        DocReader[Document Reader Tool]
+        DocReader[Optional: Document Reader Tool]
     end
 
     ForAgent["Agent A\n(Argues FOR)"] -->|Tool calls| SharedMCPServer
