@@ -282,7 +282,7 @@ Visual Studio Code has great support for MCP Apps and is probably one of the eas
 
 Then start the server, you should be able to communicate with your MCP App through the Chat Window provided you have GitHub Copilot installed. 
 
-with by triggering via prompt, for example "#get-faq":
+You can trigger it via a prompt, for example "#get-faq":
 
 ![Visual Studio run prompt](assets/vscode-run.png)
 
