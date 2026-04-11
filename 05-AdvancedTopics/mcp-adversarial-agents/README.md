@@ -67,7 +67,7 @@ flowchart TD
 |----------|-----------|
 | Both agents share one MCP server | Eliminates information asymmetry — disagreements reflect reasoning, not data access |
 | Agents have opposing system prompts | Forces each agent to stress-test the other side's position |
-| A judge agent synthesises the debate | Produces a single actionable output without human bottleneck |
+| A judge agent synthesizes the debate | Produces a single actionable output without human bottleneck |
 | Multiple debate rounds | Allows each agent to respond to the other's tool-backed evidence |
 
 ## Implementation
