@@ -106,9 +106,8 @@ async def run_python(code: str) -> str:
     """Execute a Python snippet and return stdout + stderr.
 
     WARNING: This is an unsafe placeholder that runs code directly on the host.
-    In production, replace with a real sandboxed execution environment (e.g., a
-    container with no network access and strict resource limits). Never run
-    untrusted LLM-generated code on the host.
+    In production, replace with a sandboxed execution environment (e.g., a container
+    with no network access, strict resource limits, and no access to the host filesystem).
     """
     import subprocess, sys, textwrap
     result = subprocess.run(
@@ -160,19 +159,21 @@ server.tool(
 
 server.tool(
   "run_python",
-  "Execute a Python snippet and return stdout (unsafe placeholder — replace with a real sandbox in production)",
+  "Execute a Python snippet and return stdout. WARNING: unsafe placeholder — runs on host; in production this must execute code in an isolated container with no network access and strict resource limits.",
   { code: z.string() },
   async ({ code }) => {
-    // WARNING: This is an unsafe placeholder and is intentionally insecure.
-    // In production, replace with a real sandbox (e.g., a container with no network
-    // access and strict resource limits). Never run untrusted LLM-generated code on the host.
-    const { spawnSync } = await import("child_process");
-    const result = spawnSync("python3", ["-c", code], {
-      timeout: 10000,
-      encoding: "utf8",
-    });
-    const output = (result.stdout ?? "") + (result.stderr ?? "");
-    return { content: [{ type: "text", text: output || `Exit code: ${result.status}` }] };
+    // For a real sandbox, replace this with a secure execution environment.
+    // execFileSync is used here (no shell) to avoid command injection via interpolation.
+    const { execFileSync } = await import("child_process");
+    try {
+      const output = execFileSync("python3", ["-c", code], {
+        timeout: 10000,
+      }).toString();
+      return { content: [{ type: "text", text: output }] };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      return { content: [{ type: "text", text: `Error: ${message}` }] };
+    }
   }
 );
 
