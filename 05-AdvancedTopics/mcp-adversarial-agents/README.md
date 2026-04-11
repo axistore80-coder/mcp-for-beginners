@@ -103,7 +103,12 @@ async def web_search(query: str) -> str:
 
 @mcp.tool()
 async def run_python(code: str) -> str:
-    """Execute a Python snippet and return stdout + stderr (sandbox environment)."""
+    """Execute a Python snippet and return stdout + stderr.
+
+    WARNING: This is an unsafe placeholder that runs code directly on the host.
+    In production, replace with a sandboxed execution environment (e.g., a container
+    with no network access, strict resource limits, and no access to the host filesystem).
+    """
     import subprocess, sys, textwrap
     result = subprocess.run(
         [sys.executable, "-c", textwrap.dedent(code)],
@@ -154,13 +159,14 @@ server.tool(
 
 server.tool(
   "run_python",
-  "Execute a Python snippet and return stdout (sandbox environment)",
+  "Execute a Python snippet and return stdout. WARNING: unsafe placeholder — runs on host; in production this must execute code in an isolated container with no network access and strict resource limits.",
   { code: z.string() },
   async ({ code }) => {
     // For a real sandbox, replace this with a secure execution environment.
-    const { execSync } = await import("child_process");
+    // execFileSync is used here (no shell) to avoid command injection via interpolation.
+    const { execFileSync } = await import("child_process");
     try {
-      const output = execSync(`python3 -c "${code.replace(/"/g, '\\"')}"`, {
+      const output = execFileSync("python3", ["-c", code], {
         timeout: 10000,
       }).toString();
       return { content: [{ type: "text", text: output }] };
@@ -658,7 +664,7 @@ For each scenario:
 
 - Adversarial multi-agent patterns use opposing system prompts to force agents to stress-test each other's reasoning.
 - Sharing a single MCP tool server ensures both agents work from the same information, so disagreements are about reasoning, not data access.
-- A judge agent synthesises the debate into an actionable verdict without requiring a human bottleneck for every decision.
+- A judge agent synthesizes the debate into an actionable verdict without requiring a human bottleneck for every decision.
 - This pattern is especially powerful for hallucination detection, threat modeling, factual verification, and design reviews.
 - Secure tool execution and robust logging are essential when running adversarial agents in production.
 
