@@ -107,7 +107,7 @@ async def run_python(code: str) -> str:
 
     WARNING: This is an unsafe placeholder that runs code directly on the host.
     In production, replace with a sandboxed execution environment (e.g., a container
-    with no network access and strict resource limits).
+    with no network access, strict resource limits, and no access to the host filesystem).
     """
     import subprocess, sys, textwrap
     result = subprocess.run(
@@ -159,7 +159,7 @@ server.tool(
 
 server.tool(
   "run_python",
-  "Execute a Python snippet and return stdout. WARNING: unsafe placeholder — runs on host; replace with a real sandbox in production.",
+  "Execute a Python snippet and return stdout. WARNING: unsafe placeholder — runs on host; in production this must execute code in an isolated container with no network access and strict resource limits.",
   { code: z.string() },
   async ({ code }) => {
     // For a real sandbox, replace this with a secure execution environment.
