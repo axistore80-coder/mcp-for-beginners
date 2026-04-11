@@ -268,6 +268,7 @@ async def run_agent_turn(
     """Run one turn for a single agent, returning its response text."""
     # NOTE: Replace with actual MCP-aware agent call when using a full MCP client.
     # The pattern below illustrates the concept; wire it to your preferred LLM + MCP SDK.
+    # See Step 4 for how to connect this to a live MCP session.
     response = await client.messages.create(
         model="claude-opus-4-5",
         max_tokens=512,
