@@ -16,7 +16,7 @@ By the end of this lesson, you will be able to:
 
 ## MCP Apps - how does it work
 
-The idea with MCP Apps is to provide a response that essentially is a component to be rendered. Such a component can have both visuals and interactivity, e.g button clicks, user input and more. Let's start with the server side and our MCP Server. To create an MCP App component you need to create a tool but also the application resource. These two halves are connected by a resourceUri. 
+The idea with MCP Apps is to provide a response that essentially is a component to be rendered. Such a component can have both visuals and interactivity, e.g., button clicks, user input and more. Let's start with the server side and our MCP Server. To create an MCP App component you need to create a tool but also the application resource. These two halves are connected by a resourceUri. 
 
 Here's an example. Let's try to visualize what's involved and what parts does what:
 
