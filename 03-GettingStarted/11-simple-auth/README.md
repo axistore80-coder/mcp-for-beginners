@@ -297,7 +297,7 @@ Let's get to the middleware portion next. Here we will create a middleware that 
 
 **Python**
 
-To create the middleware, we need to create a class that inherits from `BaseHTTPMiddleware`. There're two interesting pieces:
+To create the middleware, we need to create a class that inherits from `BaseHTTPMiddleware`. There are two interesting pieces:
 
 - The request `request` , that we read the header info from.
 - `call_next` the callback we need to invoke if the client has brought a credential we accept.
