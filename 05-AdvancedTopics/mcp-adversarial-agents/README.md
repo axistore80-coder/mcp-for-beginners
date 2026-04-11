@@ -131,6 +131,10 @@ python shared_tools_server.py
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { execFile } from "child_process";
+import { promisify } from "util";
+
+const execFileAsync = promisify(execFile);
 
 const server = new McpServer({ name: "debate-tools", version: "1.0.0" });
 
@@ -154,16 +158,20 @@ server.tool(
 
 server.tool(
   "run_python",
-  "Execute a Python snippet and return stdout (sandbox environment)",
+  "Execute a Python snippet and return stdout + stderr (placeholder — use a real sandbox in production)",
   { code: z.string() },
   async ({ code }) => {
-    // For a real sandbox, replace this with a secure execution environment.
-    const { execSync } = await import("child_process");
+    // WARNING: This executes LLM-controlled code directly on the host process.
+    // In production, always run inside an isolated sandbox (e.g., a container
+    // with no network access and strict resource limits).
+    // See the Security Considerations section for details.
     try {
-      const output = execSync(`python3 -c "${code.replace(/"/g, '\\"')}"`, {
+      // Pass code as a direct argument to python3 — no shell invocation,
+      // no string interpolation, no command-injection risk.
+      const { stdout, stderr } = await execFileAsync("python3", ["-c", code], {
         timeout: 10000,
-      }).toString();
-      return { content: [{ type: "text", text: output }] };
+      });
+      return { content: [{ type: "text", text: stdout + stderr }] };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       return { content: [{ type: "text", text: `Error: ${message}` }] };
