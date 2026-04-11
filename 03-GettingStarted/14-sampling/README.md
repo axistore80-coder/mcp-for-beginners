@@ -71,7 +71,7 @@ Ok, now we have a mile high view of a credible scenario, let's talk about the sa
 }
 ```
 
-There're a few things here worth calling out:
+There are a few things here worth calling out:
 
 - Prompt, under content -> text, is our prompt that is an instruction for the LLM to summarize blog post content.
 
