@@ -18,7 +18,7 @@ In this chapter, we will:
 
 ## What is Sampling and why use it?
 
-Sampling is an davanced features that works in the following way:
+Sampling is an advanced feature that works in the following way:
 
 ```mermaid
 sequenceDiagram
