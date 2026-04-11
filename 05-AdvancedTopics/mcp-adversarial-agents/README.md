@@ -103,7 +103,12 @@ async def web_search(query: str) -> str:
 
 @mcp.tool()
 async def run_python(code: str) -> str:
-    """Execute a Python snippet and return stdout + stderr (sandbox environment)."""
+    """Execute a Python snippet and return stdout + stderr.
+
+    WARNING: This is an unsafe placeholder that runs code directly on the host.
+    In production, replace with a sandboxed execution environment (e.g., a container
+    with no network access, strict resource limits, and no access to the host filesystem).
+    """
     import subprocess, sys, textwrap
     result = subprocess.run(
         [sys.executable, "-c", textwrap.dedent(code)],
@@ -248,24 +253,22 @@ The orchestrator creates both agents, manages the debate turns, then passes the 
 ```python
 # debate_orchestrator.py
 import asyncio
-from anthropic import Anthropic
+from anthropic import AsyncAnthropic
 from prompts import FOR_SYSTEM_PROMPT, AGAINST_SYSTEM_PROMPT, JUDGE_SYSTEM_PROMPT
 
-client = Anthropic()
+client = AsyncAnthropic()
 
-MCP_SERVER_COMMAND = ["python", "shared_tools_server.py"]
 NUM_ROUNDS = 3  # Number of back-and-forth exchange rounds
 
 
 async def run_agent_turn(
     conversation_history: list[dict],
     system_prompt: str,
-    mcp_server_command: list[str],
 ) -> str:
     """Run one turn for a single agent, returning its response text."""
     # NOTE: Replace with actual MCP-aware agent call when using a full MCP client.
     # The pattern below illustrates the concept; wire it to your preferred LLM + MCP SDK.
-    response = client.messages.create(
+    response = await client.messages.create(
         model="claude-opus-4-5",
         max_tokens=512,
         system=system_prompt,
@@ -294,7 +297,7 @@ async def run_debate(proposition: str) -> dict:
         print(f"\n--- Round {round_num} ---")
 
         # Agent A argues FOR.
-        for_response = await run_agent_turn(for_history, FOR_SYSTEM_PROMPT, MCP_SERVER_COMMAND)
+        for_response = await run_agent_turn(for_history, FOR_SYSTEM_PROMPT)
         print(f"Agent A (FOR): {for_response}")
         transcript.append({"round": round_num, "agent": "FOR", "text": for_response})
 
@@ -304,7 +307,7 @@ async def run_debate(proposition: str) -> dict:
 
         # Agent B argues AGAINST.
         against_response = await run_agent_turn(
-            against_history, AGAINST_SYSTEM_PROMPT, MCP_SERVER_COMMAND
+            against_history, AGAINST_SYSTEM_PROMPT
         )
         print(f"Agent B (AGAINST): {against_response}")
         transcript.append({"round": round_num, "agent": "AGAINST", "text": against_response})
@@ -325,7 +328,7 @@ async def run_debate(proposition: str) -> dict:
     ]
 
     # Judge evaluates the debate.
-    verdict = await run_agent_turn(judge_input, JUDGE_SYSTEM_PROMPT, MCP_SERVER_COMMAND)
+    verdict = await run_agent_turn(judge_input, JUDGE_SYSTEM_PROMPT)
     print(f"\n=== Judge Verdict ===\n{verdict}")
 
     return {"transcript": transcript, "verdict": verdict}
@@ -641,7 +644,7 @@ For each scenario:
 
 - Adversarial multi-agent patterns use opposing system prompts to force agents to stress-test each other's reasoning.
 - Sharing a single MCP tool server ensures both agents work from the same information, so disagreements are about reasoning, not data access.
-- A judge agent synthesises the debate into an actionable verdict without requiring a human bottleneck for every decision.
+- A judge agent synthesizes the debate into an actionable verdict without requiring a human bottleneck for every decision.
 - This pattern is especially powerful for hallucination detection, threat modeling, factual verification, and design reviews.
 - Secure tool execution and robust logging are essential when running adversarial agents in production.
 
